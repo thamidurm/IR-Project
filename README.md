@@ -4,17 +4,17 @@
 ```
 .
 ├── data
-│   ├── data.json   # Data scraped from ESPNCricInfo
+│   ├── data.json     # Data scraped from ESPNCricInfo
 │
-├── app              # Folder containing the code
+├── app               # Folder containing the code
 │  │
-│  ├── app.py       # Flask app
-│  ├── filter.py    # Class to represent a filtering by a numeric field
-│  ├── scrapper.py  # Code used to scrap data
-│  ├── search.py    # Code containing query processing and elasticsearch client for search
-│  ├── seed.py       # Code used to seed elasticsearch with the data
+│  ├── app.py         # Flask app
+│  ├── filter.py      # Class to represent a filtering by a numeric field
+│  ├── scrapper.py    # Code used to scrap data
+│  ├── search.py      # Code containing query processing and elasticsearch client for search
+│  ├── seed.py        # Code used to seed elasticsearch with the data
 │
-│── queries.txt # Examples of supported queries
+│── queries.txt       # Examples of supported queries
 ├── requirements.txt  # Packages needed to run the code
 .
 ```
@@ -53,6 +53,6 @@
 - Limited bilingual support for cricket jargon.
 - Prioritizing fields based on the existence of keywords in the query
 - Supports querying multiple text fields: Name, Birth Year, Birthplace, Role, Batting Style, Bowling Style, Biography, Teams Played In.
-- Tolerate simple spelling errors and different forms of words due to use of stemming (&quot;ගාල්ලේ&quot;will match &quot;ගාල්ල&quot;).
+- Tolerate simple spelling errors and different forms of words due to use of stemming ("ගාල්ලේ" will match "ගාල්ල" etc.).
 
 **GitHub URL** :[**https://github.com/thamidurm/IR-Project**](https://github.com/thamidurm/IR-Project)
