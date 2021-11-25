@@ -27,14 +27,14 @@ PLAYING_ROLE_FIELD = 'playing_role'
 BATTING_STYLE_FIELD = 'batting_style'
 BOWLING_STYLE_FIELD = 'bowling_style'
 
-BIRTH_INDICATORS = ['ඉපද',u'බිහි',u'උත්පත්',u'උද්භ',u'උපත',u'උප්පැ',u'උ පන්',u'ජන්',u'ජම්',u'මූලාරම්භ',u'වංශ',u'ප්‍රසූ',u'ජාතක',u'ප්‍රභ ව',u'මූලාරම්භ']
+BIRTH_INDICATORS = ['ඉපද', u'ඉපදුන',u'බිහි',u'උත්පත්',u'උද්භ',u'උපත',u'උප්පැ',u'උපන්',u'උ පන්',u'ජන්',u'ජම්',u'මූලාරම්භ',u'වංශ',u'ප්‍රසූ',u'ජාතක',u'ප්‍රභ ව',u'මූලාරම්භ']
 BIRTH_YEAR_INDICATORS = [u'වසර', u'වර්ෂය', u'අවුරුද්ද']
 LOCATION_INDICATORS = [u'ස්ථාන',u' තැන ',u'නගර',u'ගම',u'ග්‍රාම']
 BOWLING_INDICATORS = [u'වේග',u'දඟ',u'දග',u'ස්පින්',u'ෆාස්ට්']
 BATTING_INDICATORS = [u'පිති',u'පහර']
 ROLE_INDICATORS = [u'පිතිකර',u'පිති කර' ,u'පන්දු',u'බැට්',u'තුන්',u'ඉරියව්',u'ඕල්']
 TEAM_INDICATORS = [u'කණ්ඩායම', u'සමාජ', u'සංගම', u'වෙනුවෙන්']
-COMMON_TERMS = ['ක්‍රීඩක']
+COMMON_TERMS = ['ක්‍රීඩකයින්', 'ක්‍රීඩක']
 STAT_INDICATORS = {
     'highest_score' : ['hs'],
     'wickets' : [u'කඩුල'],
@@ -46,7 +46,8 @@ STAT_INDICATORS = {
 STAT_FIELD_MAP = {
     'wickets' : WICKETS_FIELD,
     'runs' : SCORED_RUNS_FIELD,
-    'matches':  MATCHES_FIELD
+    'matches':  MATCHES_FIELD,
+    'highest_score': HIGHEST_SCORE_FIELD
 } 
 
 SYNONYMS = {
@@ -164,16 +165,17 @@ def get_filter_dict(filters):
 def build_query_dict(query):
 
     normalized_query = normalize_query(query)
-    boost_weights = get_boost_weights_for_text_fields(query)
+    boost_weights = get_boost_weights_for_text_fields(normalized_query)
     filter_arr = get_filter_array(normalized_query)
     filters = get_filter_dict(filter_arr)
     for c in COMMON_TERMS:
-        query = query.replace(c, '')
+        query = query.replace(c, '') 
+    query += ' ' + normalized_query
     fields = ['{0}^{1}'.format(field, weight) for field, weight in boost_weights.items()]
     # print(get_filter_array(normalized_query))
     query_dct =   { 
         "bool": { 
-        "must": {
+        "should": {
             "multi_match" : {
                 "query" : query,
                 "fields" : fields,
@@ -189,47 +191,47 @@ def build_query_dict(query):
     return query_dct
 
 def get_boost_weights_for_text_fields(query):
-
-    boost_weights = {k : 2 for k in TEXT_FIELDS}
+    print(query)
+    boost_weights = {k : 1 for k in TEXT_FIELDS}
     boost_weights['bio'] = 1
     for i in BIRTH_INDICATORS:
         if i in query:
-            boost_weights[BIRTH_CITY_FIELD] += 1
+            boost_weights[BIRTH_CITY_FIELD] += 3
             break
     
     for i in LOCATION_INDICATORS:
         if i in query:
-            boost_weights[BIRTH_CITY_FIELD] += 1
+            boost_weights[BIRTH_CITY_FIELD] += 2
             break
 
     for i in BOWLING_INDICATORS:
         if i in query:
-            boost_weights[BOWLING_STYLE_FIELD] += 1
+            boost_weights[BOWLING_STYLE_FIELD] += 2
             break
 
     for i in BATTING_INDICATORS:
         if i in query:
-            boost_weights[BATTING_STYLE_FIELD] += 1
+            boost_weights[BATTING_STYLE_FIELD] += 2
             break
 
     for i in TEAM_INDICATORS:
         if i in query:
-            boost_weights[TEAMS_FIELD] += 1
+            boost_weights[TEAMS_FIELD] += 2
             break
     
     for i in ROLE_INDICATORS:
         if i in query:
-            boost_weights[PLAYING_ROLE_FIELD] += 1
+            boost_weights[PLAYING_ROLE_FIELD] += 2
             break
 
     for i in BIRTH_YEAR_INDICATORS:
         if i in query:
-            boost_weights[BIRTH_YEAR_FILED] += 1
+            boost_weights[BIRTH_YEAR_FILED] += 2
     for token in query.split():
         if is_num(token):
             num = float(token)
             if  00 < num < 99 or 1940 < num < 2021:
-                boost_weights[BIRTH_YEAR_FILED] +=1
+                boost_weights[BIRTH_YEAR_FILED] +=2
                 break
     # print(boost_weights)
     return boost_weights
