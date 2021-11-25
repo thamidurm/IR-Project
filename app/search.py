@@ -33,7 +33,7 @@ LOCATION_INDICATORS = [u'ස්ථාන',u' තැන ',u'නගර',u'ගම',
 BOWLING_INDICATORS = [u'වේග',u'දඟ',u'දග',u'ස්පින්',u'ෆාස්ට්']
 BATTING_INDICATORS = [u'පිති',u'පහර']
 ROLE_INDICATORS = [u'පිතිකර',u'පිති කර' ,u'පන්දු',u'බැට්',u'තුන්',u'ඉරියව්',u'ඕල්']
-TEAM_INDICATORS = [u'කණ්ඩායම', u'සමාජ', u'සංගම', u'වෙනුවෙන්']
+TEAM_INDICATORS = [u'කන්ඩාය', u'සමාජ', u'සංගම', u'වෙනුවෙන්']
 COMMON_TERMS = ['ක්‍රීඩකයින්', 'ක්‍රීඩක']
 STAT_INDICATORS = {
     'highest_score' : ['hs'],
@@ -170,7 +170,9 @@ def build_query_dict(query):
     filters = get_filter_dict(filter_arr)
     for c in COMMON_TERMS:
         query = query.replace(c, '') 
+        normalized_query = normalized_query.replace(c, '')
     query += ' ' + normalized_query
+    print(query)
     fields = ['{0}^{1}'.format(field, weight) for field, weight in boost_weights.items()]
     # print(get_filter_array(normalized_query))
     query_dct =   { 
@@ -191,7 +193,7 @@ def build_query_dict(query):
     return query_dct
 
 def get_boost_weights_for_text_fields(query):
-    print(query)
+    print('norm',query)
     boost_weights = {k : 1 for k in TEXT_FIELDS}
     boost_weights['bio'] = 1
     for i in BIRTH_INDICATORS:
